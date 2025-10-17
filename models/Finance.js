@@ -1,0 +1,2 @@
+// Finance model - Mongoose schema
+
