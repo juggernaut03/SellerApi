@@ -52,6 +52,7 @@ Update the following in `.env`:
 - `MONGODB_URI` - Your MongoDB connection string
 - `JWT_SECRET` - A secure random string for JWT signing
 - `CLOUDINARY_*` - Your Cloudinary credentials (for file uploads)
+- `APP_URL` - Your deployed app URL (for Render keep-alive, e.g., `https://sellerapi-2pgk.onrender.com` or `https://your-app.onrender.com`)
 
 ### 3. Create First Admin User
 
@@ -386,6 +387,7 @@ Response:
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Hashing**: bcryptjs
 - **Logging**: Winston + Morgan
+- **CORS**: Configured to allow all origins for API access
 - **File Storage**: Cloudinary (configured, not yet used)
 
 ## License

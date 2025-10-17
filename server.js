@@ -23,7 +23,10 @@ const server = app.listen(PORT, () => {
 
   // Self-ping mechanism to keep Render server alive
   const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes
-  const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+  // Use Render URL for production, localhost for development
+  const APP_URL = process.env.APP_URL || (config.nodeEnv === 'production'
+    ? 'https://sellerapi-2pgk.onrender.com'
+    : `http://localhost:${PORT}`);
 
   logger.info(`🔄 Keep-alive pings enabled - pinging every ${KEEP_ALIVE_INTERVAL / (60 * 1000)} minutes`);
 
