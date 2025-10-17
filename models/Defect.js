@@ -1,0 +1,2 @@
+// Defect model - Mongoose schema
+
