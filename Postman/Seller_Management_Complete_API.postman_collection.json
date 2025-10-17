@@ -1,0 +1,888 @@
+{
+  "info": {
+    "name": "Seller Management API - Complete",
+    "description": "Complete API collection: Auth, Users, Inventory, Shipments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5002",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inventory_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shipment_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "defect_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "finance_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('admin_token', jsonData.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"gauravpawar904@gmail.com\",\n  \"password\": \"qwerty@12\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory Management",
+      "item": [
+        {
+          "name": "Create Inventory Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('inventory_id', jsonData.data.item._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SKU001\",\n  \"name\": \"Wooden Spoon Set\",\n  \"barcode\": \"8904561237890\",\n  \"availableQty\": 100,\n  \"faultyQty\": 5,\n  \"unitWeight\": 0.35,\n  \"purchasePrice\": 50,\n  \"sellingPrice\": 85,\n  \"supplier\": \"ABC Suppliers\",\n  \"category\": \"Kitchenware\",\n  \"lowStockThreshold\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory"]
+            }
+          }
+        },
+        {
+          "name": "Get All Inventory",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory?page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Inventory",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory?search=spoon",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory"],
+              "query": [{"key": "search", "value": "spoon"}]
+            }
+          }
+        },
+        {
+          "name": "Get Inventory by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory/{{inventory_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "{{inventory_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Inventory by SKU",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory/sku/SKU001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "sku", "SKU001"]
+            }
+          }
+        },
+        {
+          "name": "Update Inventory Item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wooden Spoon Set - Premium\",\n  \"sellingPrice\": 95\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory/{{inventory_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "{{inventory_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availableQty\": 150,\n  \"faultyQty\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory/{{inventory_id}}/stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "{{inventory_id}}", "stock"]
+            }
+          }
+        },
+        {
+          "name": "Adjust Stock (Add)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qtyChange\": 50,\n  \"isFaulty\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory/{{inventory_id}}/adjust",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "{{inventory_id}}", "adjust"]
+            }
+          }
+        },
+        {
+          "name": "Get Low Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory/alerts/low-stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "alerts", "low-stock"]
+            }
+          }
+        },
+        {
+          "name": "Get Inventory Stats",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/inventory/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Import",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU002\",\n      \"name\": \"Ceramic Bowl\",\n      \"availableQty\": 75,\n      \"unitWeight\": 0.5,\n      \"purchasePrice\": 60,\n      \"sellingPrice\": 100\n    },\n    {\n      \"sku\": \"SKU003\",\n      \"name\": \"Stainless Steel Pan\",\n      \"availableQty\": 50,\n      \"unitWeight\": 1.2,\n      \"purchasePrice\": 150,\n      \"sellingPrice\": 250\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/inventory/bulk-import",
+              "host": ["{{base_url}}"],
+              "path": ["api", "inventory", "bulk-import"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shipment Management",
+      "item": [
+        {
+          "name": "Create Shipment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('shipment_id', jsonData.data.shipment._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destination\": \"Amazon FBA TX Warehouse\",\n  \"destinationType\": \"FBA\",\n  \"carrier\": \"UPS\",\n  \"notes\": \"Priority shipment\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments"]
+            }
+          }
+        },
+        {
+          "name": "Get All Shipments",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/shipments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments"]
+            }
+          }
+        },
+        {
+          "name": "Get Shipment by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Box to Shipment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boxNo\": \"BOX1\",\n  \"items\": [\n    {\n      \"sku\": \"SKU001\",\n      \"qty\": 20\n    },\n    {\n      \"sku\": \"SKU002\",\n      \"qty\": 15\n    }\n  ],\n  \"notes\": \"Handle with care\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/boxes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "boxes"]
+            }
+          }
+        },
+        {
+          "name": "Add Item to Box",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SKU003\",\n  \"qty\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/boxes/0/items",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "boxes", "0", "items"]
+            }
+          }
+        },
+        {
+          "name": "Add Duplicate SKU to Box (Should Update Quantity)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SKU001\",\n  \"qty\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/boxes/0/items",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "boxes", "0", "items"]
+            }
+          }
+        },
+        {
+          "name": "Duplicate Box",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boxNo\": \"BOX2\",\n  \"boxName\": \"P1-B2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/boxes/0/duplicate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "boxes", "0", "duplicate"]
+            },
+            "description": "Duplicate box at index 0 (BOX1) with all its items and quantities. Optionally specify boxNo, boxName, boxWeight, dimensions, or notes to override."
+          }
+        },
+        {
+          "name": "Finalize Shipment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/finalize",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "finalize"]
+            }
+          }
+        },
+        {
+          "name": "Mark as Shipped",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trackingNumber\": \"1Z999AA10123456784\",\n  \"carrier\": \"UPS\",\n  \"shipmentDate\": \"2025-10-17\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/ship",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "ship"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Shipment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/{{shipment_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "{{shipment_id}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Get Shipment Stats",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pack Groups (Amazon FBA)",
+      "item": [
+        {
+          "name": "Create Shipment from Pack Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"packGroup\": \"1\",\n  \"fbaShipmentId\": \"FBA12345\",\n  \"destination\": \"Amazon FBA TX Warehouse\",\n  \"skus\": [\n    {\n      \"sku\": \"SKU001\",\n      \"productName\": \"Wooden Spoon Set - Premium\",\n      \"productId\": \"pk001\",\n      \"asin\": \"B07J2L93SN\",\n      \"fnsku\": \"X001234567\",\n      \"condition\": \"NewItem\",\n      \"prepType\": \"NONE\",\n      \"expectedQty\": 32,\n      \"boxQuantities\": [8, 8, 8, 8]\n    },\n    {\n      \"sku\": \"SKU002\",\n      \"productName\": \"Ceramic Bowl\",\n      \"productId\": \"pk002\",\n      \"asin\": \"B07K4B1PCV\",\n      \"fnsku\": \"X001234568\",\n      \"condition\": \"NewItem\",\n      \"prepType\": \"NONE\",\n      \"expectedQty\": 40,\n      \"boxQuantities\": [10, 10, 10, 10]\n    }\n  ],\n  \"boxes\": [\n    {\n      \"boxNo\": \"BOX1\",\n      \"boxName\": \"P1-B1\",\n      \"boxWeight\": 40,\n      \"length\": 23,\n      \"width\": 17,\n      \"height\": 13\n    },\n    {\n      \"boxNo\": \"BOX2\",\n      \"boxName\": \"P1-B2\",\n      \"boxWeight\": 40,\n      \"length\": 23,\n      \"width\": 17,\n      \"height\": 13\n    },\n    {\n      \"boxNo\": \"BOX3\",\n      \"boxName\": \"P1-B3\",\n      \"boxWeight\": 40,\n      \"length\": 23,\n      \"width\": 17,\n      \"height\": 13\n    },\n    {\n      \"boxNo\": \"BOX4\",\n      \"boxName\": \"P1-B4\",\n      \"boxWeight\": 40,\n      \"length\": 23,\n      \"width\": 17,\n      \"height\": 13\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pack-groups",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pack-groups"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pack Group Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.shipment && response.data.shipment._id) {",
+                  "        pm.collectionVariables.set('shipment_id', response.data.shipment._id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/pack-groups/{{shipment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pack-groups", "{{shipment_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Box Distribution",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"distributionData\": [\n    {\n      \"sku\": \"SKU001\",\n      \"boxQuantities\": [10, 10, 6, 6]\n    },\n    {\n      \"sku\": \"SKU002\",\n      \"boxQuantities\": [8, 8, 12, 12]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pack-groups/{{shipment_id}}/distribution",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pack-groups", "{{shipment_id}}", "distribution"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Defect Management",
+      "item": [
+        {
+          "name": "Create Defect Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('defect_id', jsonData.data.defect._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"SKU001\",\n  \"productName\": \"Wooden Spoon Set - Premium\",\n  \"defectiveQty\": 5,\n  \"defectType\": \"damaged\",\n  \"severity\": \"medium\",\n  \"remarks\": \"Cracked handles during shipping\",\n  \"detectedAt\": \"quality_check\",\n  \"supplier\": \"ABC Suppliers\",\n  \"unitCost\": 15.00,\n  \"shipmentId\": \"{{shipment_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/defects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects"]
+            }
+          }
+        },
+        {
+          "name": "Get All Defects",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/defects?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Defects by Shipment",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/defects/shipment/{{shipment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "shipment", "{{shipment_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Defect by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/defects/{{defect_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "{{defect_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Defect",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"defectType\": \"quality_issue\",\n  \"severity\": \"high\",\n  \"remarks\": \"Product failed quality inspection\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/defects/{{defect_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "{{defect_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Resolve Defect",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution\": \"Items replaced with new batch from supplier\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/defects/{{defect_id}}/resolve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "{{defect_id}}", "resolve"]
+            }
+          }
+        },
+        {
+          "name": "Update Supplier Claim",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimAmount\": 75.00,\n  \"claimStatus\": \"pending\",\n  \"supplierNotified\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/defects/{{defect_id}}/claim",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "{{defect_id}}", "claim"]
+            }
+          }
+        },
+        {
+          "name": "Get Defect Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/defects/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "defects", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Finance Management",
+      "item": [
+        {
+          "name": "Create Amazon Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('finance_id', jsonData.data.transaction._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"income\",\n  \"category\": \"amazon_payment\",\n  \"amount\": 1250.50,\n  \"description\": \"Amazon payment for order #12345\",\n  \"transactionDate\": \"2025-10-17\",\n  \"orderId\": \"123-4567890-1234567\",\n  \"settlementId\": \"SET-2025-001\",\n  \"breakdown\": {\n    \"productSales\": 1150.00,\n    \"shippingCredits\": 50.50,\n    \"amazonFees\": 25.00,\n    \"commissionFees\": 75.00\n  },\n  \"sku\": \"SKU001\",\n  \"productName\": \"Wooden Spoon Set - Premium\",\n  \"shipmentId\": \"{{shipment_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/finance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance"]
+            }
+          }
+        },
+        {
+          "name": "Create Product Purchase Expense",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"expense\",\n  \"category\": \"product_purchase\",\n  \"amount\": 500.00,\n  \"description\": \"Purchase of wooden spoons from supplier\",\n  \"transactionDate\": \"2025-10-15\",\n  \"supplier\": \"ABC Suppliers\",\n  \"sku\": \"SKU001\",\n  \"productName\": \"Wooden Spoon Set - Premium\",\n  \"costs\": {\n    \"purchaseCost\": 450.00,\n    \"shippingCost\": 30.00,\n    \"packagingCost\": 20.00\n  },\n  \"paymentMethod\": \"bank_transfer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/finance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance"]
+            }
+          }
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transactions by SKU",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/sku/SKU001?startDate=2025-10-01&endDate=2025-10-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "sku", "SKU001"],
+              "query": [
+                {"key": "startDate", "value": "2025-10-01"},
+                {"key": "endDate", "value": "2025-10-31"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/{{finance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "{{finance_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Financial Summary",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/summary?startDate=2025-10-01&endDate=2025-10-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "summary"],
+              "query": [
+                {"key": "startDate", "value": "2025-10-01"},
+                {"key": "endDate", "value": "2025-10-31"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Profit by SKU",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/profit/sku/SKU001?startDate=2025-10-01&endDate=2025-10-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "profit", "sku", "SKU001"],
+              "query": [
+                {"key": "startDate", "value": "2025-10-01"},
+                {"key": "endDate", "value": "2025-10-31"}
+              ]
+            }
+          
+          }
+        },
+        {
+          "name": "Get Profit by Supplier",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/profit/supplier?startDate=2025-10-01&endDate=2025-10-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "profit", "supplier"],
+              "query": [
+                {"key": "startDate", "value": "2025-10-01"},
+                {"key": "endDate", "value": "2025-10-31"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Transaction",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{admin_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated Amazon payment description\",\n  \"notes\": \"Added settlement details\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/finance/{{finance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "{{finance_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": {
+              "raw": "{{base_url}}/api/finance/{{finance_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "finance", "{{finance_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
