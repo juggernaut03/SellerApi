@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/*.log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
+
+# Test coverage
+coverage/
+
+# Generated files
+public/invoices/*
+!public/invoices/.gitkeep
+public/packing_lists/*
+!public/packing_lists/.gitkeep
+public/labels/*
+!public/labels/.gitkeep
+
+# Export files
+exports/inventory_exports/*
+!exports/inventory_exports/.gitkeep
+exports/shipment_exports/*
+!exports/shipment_exports/.gitkeep
+exports/finance_exports/*
+!exports/finance_exports/.gitkeep
+
+# Temporary files
+tmp/
+temp/
+
+# Postman environment files (user-specific)
+*.postman_environment.json
+
